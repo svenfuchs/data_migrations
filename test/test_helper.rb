@@ -1,7 +1,9 @@
 require 'logger'
 require 'bundler/setup'
 require 'test/unit'
+require 'mocha'
 require 'test_declarative'
+require 'capture_stdout'
 require 'data_migrations'
 
 log = '/tmp/data_migrations.log'
@@ -11,15 +13,15 @@ ActiveRecord::Base.logger = Logger.new(log)
 adapter = ENV['ADAPTER'] || 'postgresql'
 
 
-db_config = begin
-  db_configs = YAML.load_file(File.expand_path('../database.yml', __FILE__)).symbolize_keys
-  db_configs[adapter.to_sym].symbolize_keys
+config = begin
+  configs = YAML.load_file(File.expand_path('../database.yml', __FILE__)).symbolize_keys
+  configs[adapter.to_sym].symbolize_keys
 rescue Errno::ENOENT => e
   { :adapter => 'postgresql', :database => 'data_migrations_test' }
 end
 
 puts "Running tests against #{adapter}"
-ActiveRecord::Base.establish_connection(db_config)
+ActiveRecord::Base.establish_connection(config)
 
 
 ActiveRecord::Schema.define(:version => 1) do
@@ -32,3 +34,10 @@ ActiveRecord::Schema.define(:version => 1) do
 end unless ActiveRecord::Base.connection.table_exists?(:builds)
 
 
+module TestHelpers
+  def migrate_table(&block)
+    DataMigrations::Migration.new(:builds, :to => :tasks, &block)
+  end
+end
+
+Test::Unit::TestCase.send(:include, TestHelpers)

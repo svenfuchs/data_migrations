@@ -20,12 +20,14 @@ GEM
     archive-tar-minitar (0.5.2)
     arel (2.0.10)
     builder (2.1.2)
+    capture_stdout (0.0.1)
     columnize (0.3.4)
     i18n (0.5.0)
     linecache (0.46)
       rbx-require-relative (> 0.0.4)
     linecache19 (0.5.12)
       ruby_core_source (>= 0.1.4)
+    mocha (0.9.12)
     pg (0.11.0)
     rbx-require-relative (0.0.5)
     require_relative (1.0.2)
@@ -51,7 +53,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  capture_stdout
   data_migrations!
+  mocha
   pg
   require_relative (~> 1.0.1)
   ruby-debug

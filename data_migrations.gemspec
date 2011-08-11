@@ -19,5 +19,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'activerecord'
   s.add_development_dependency 'test_declarative'
+  s.add_development_dependency 'capture_stdout'
+  s.add_development_dependency 'mocha'
   s.add_development_dependency 'pg'
 end
