@@ -1,6 +1,6 @@
-# data\_migrations
+# data\_migrations [![Build Status](https://secure.travis-ci.org/svenfuchs/data_migrations.png)](http://travis-ci.org/svenfuchs/data_migrations)
 
-    class CreateRepositories < ActiveRecord::Migration
+    class CreateBuilds < ActiveRecord::Migration
       def self.up
         create_table :tests do |t|
           # ...
