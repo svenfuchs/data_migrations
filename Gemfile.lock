@@ -3,6 +3,7 @@ PATH
   specs:
     data_migrations (0.0.1)
       activerecord
+      rake
 
 GEM
   remote: http://rubygems.org/
@@ -29,6 +30,7 @@ GEM
       ruby_core_source (>= 0.1.4)
     mocha (0.9.12)
     pg (0.11.0)
+    rake (0.9.2)
     rbx-require-relative (0.0.5)
     require_relative (1.0.2)
     ruby-debug (0.10.4)
