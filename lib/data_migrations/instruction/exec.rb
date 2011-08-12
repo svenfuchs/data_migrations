@@ -1,6 +1,6 @@
 module DataMigrations
   class Instruction
-    class Exec < Instruction
+    class Exec < Base
       attr_reader :statement
 
       def initialize(migration, statement)

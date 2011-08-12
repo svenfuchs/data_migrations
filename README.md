@@ -9,13 +9,24 @@
         migrate_table :builds, :to => :tests |t|
           t.where 'parent_id IS NULL'
           t.move :number
-          t.copy :result, :to => :status
+          t.copy :parent_id, :to => :build_id
           t.copy :commit, :result, :to => [:hash, :status]
-          t.copy :all, :except => :foo
-          t.exec 'UPDATE foo ...'
+          t.copy :all
+
+          # t.copy :all, :except => :foo
+          # t.exec 'UPDATE foo ...'
         end
       end
 
       def self.down
+        # revert the whole thing. not sure we can derive this automatically?
+
+        migrate_table :builds, :to => :tests |t|
+          t.move :number
+          t.copy :build_id, :to => :parent_id
+          t.copy :hash, :status, :to => [:commit, :result]
+        end
+
+        drop_table :tests
       end
     end

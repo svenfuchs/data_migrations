@@ -22,19 +22,23 @@ end
 
 puts "Running tests against #{adapter}"
 ActiveRecord::Base.establish_connection(config)
-
+ActiveRecord::Migration.verbose = false
 
 ActiveRecord::Schema.define(:version => 1) do
+  drop_table :builds rescue nil
   create_table :builds, :force => true do |t|
     t.integer :parent_id
     t.integer :status
     t.string :commit
-    t.string :author_name
   end
 end unless ActiveRecord::Base.connection.table_exists?(:builds)
 
 
 module TestHelpers
+  def migrate_table_statements(&block)
+    migrate_table(&block).instructions.last.statements
+  end
+
   def migrate_table(&block)
     DataMigrations::Migration.new(:builds, :to => :tasks, &block)
   end

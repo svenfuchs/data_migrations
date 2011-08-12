@@ -9,7 +9,11 @@ module DataMigrations
     end
 
     def columns
-      @columns ||= connection.columns(name)
+      connection.columns(name)
+    end
+
+    def column_names
+      columns.map(&:name)
     end
 
     def column(name)
