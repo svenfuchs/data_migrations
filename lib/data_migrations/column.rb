@@ -13,7 +13,7 @@ module DataMigrations
     end
 
     def definition
-      [quote(self.alias || name), type].join(' ')
+      [quoted_alias_name, type].join(' ')
     end
 
     def type
@@ -26,6 +26,10 @@ module DataMigrations
 
     def quoted_name
       quote(name)
+    end
+
+    def quoted_alias_name
+      quote(self.alias || name)
     end
 
     def quote(name)

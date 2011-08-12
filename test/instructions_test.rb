@@ -3,47 +3,47 @@ require 'test_helper'
 class InstructionsTest < Test::Unit::TestCase
   test 'copy: generates an INSERT INTO ... SELECT FROM statement (for a single column)' do
     statement = migrate_table_statements { |t| t.copy :commit }.first
-    assert_equal 'INSERT INTO "tasks" SELECT "commit" FROM "builds" AS t("commit" character varying(255))', statement
+    assert_equal 'INSERT INTO "tasks" ("commit") SELECT "commit" FROM "builds"', statement
   end
 
   test 'copy: generates an INSERT INTO ... SELECT FROM statement (for a multiple columns)' do
     statement = migrate_table_statements { |t| t.copy :parent_id, :commit, :status }.first
-    assert_equal 'INSERT INTO "tasks" SELECT "parent_id", "commit", "status" FROM "builds" AS t("parent_id" integer, "commit" character varying(255), "status" integer)', statement
+    assert_equal 'INSERT INTO "tasks" ("parent_id", "commit", "status") SELECT "parent_id", "commit", "status" FROM "builds"', statement
   end
 
   test 'copy: aliases column names if specified (for a single column)' do
     statement = migrate_table_statements { |t| t.copy :commit, :to => :hash }.first
-    assert_equal 'INSERT INTO "tasks" SELECT "commit" AS "hash" FROM "builds" AS t("hash" character varying(255))', statement
+    assert_equal 'INSERT INTO "tasks" ("hash") SELECT "commit" AS "hash" FROM "builds"', statement
   end
 
   test 'copy: aliases column names if specified (for a multiple columns)' do
     statement = migrate_table_statements { |t| t.copy :parent_id, :commit, :status, :to => [:owner_id, :hash, :result] }.first
-    assert_equal 'INSERT INTO "tasks" SELECT "parent_id" AS "owner_id", "commit" AS "hash", "status" AS "result" FROM "builds" AS t("owner_id" integer, "hash" character varying(255), "result" integer)', statement
+    assert_equal 'INSERT INTO "tasks" ("owner_id", "hash", "result") SELECT "parent_id" AS "owner_id", "commit" AS "hash", "status" AS "result" FROM "builds"', statement
   end
 
   test 'copy: includes a condition if given' do
     statement = migrate_table_statements { |t| t.where 'status = 1'; t.copy :commit }.first
-    assert_equal 'INSERT INTO "tasks" SELECT "commit" FROM "builds" WHERE status = 1 AS t("commit" character varying(255))', statement
+    assert_equal 'INSERT INTO "tasks" ("commit") SELECT "commit" FROM "builds" WHERE status = 1', statement
   end
 
   test 'copy: using :all columns' do
     statement = migrate_table_statements { |t| t.copy :all }.first
-    assert_equal 'INSERT INTO "tasks" SELECT "id", "parent_id", "status", "commit" FROM "builds" AS t("id" integer, "parent_id" integer, "status" integer, "commit" character varying(255))', statement
+    assert_equal 'INSERT INTO "tasks" ("id", "parent_id", "status", "commit") SELECT "id", "parent_id", "status", "commit" FROM "builds"', statement
   end
 
   test 'copy: using :all columns with :except given as a symbol' do
     statement = migrate_table_statements { |t| t.copy :all, :except => :id }.first
-    assert_equal 'INSERT INTO "tasks" SELECT "parent_id", "status", "commit" FROM "builds" AS t("parent_id" integer, "status" integer, "commit" character varying(255))', statement
+    assert_equal 'INSERT INTO "tasks" ("parent_id", "status", "commit") SELECT "parent_id", "status", "commit" FROM "builds"', statement
   end
 
   test 'copy: using :all columns with :except given as an array' do
     statement = migrate_table_statements { |t| t.copy :all, :except => [:id, :parent_id] }.first
-    assert_equal 'INSERT INTO "tasks" SELECT "status", "commit" FROM "builds" AS t("status" integer, "commit" character varying(255))', statement
+    assert_equal 'INSERT INTO "tasks" ("status", "commit") SELECT "status", "commit" FROM "builds"', statement
   end
 
   test 'copy: using :all columns with instructions for some columns already being defined' do
     statement = migrate_table_statements { |t| t.copy :parent_id; t.copy :status; t.copy :all }.first
-    assert_equal 'INSERT INTO "tasks" SELECT "id", "commit" FROM "builds" AS t("id" integer, "commit" character varying(255))', statement
+    assert_equal 'INSERT INTO "tasks" ("id", "commit") SELECT "id", "commit" FROM "builds"', statement
   end
 
   test 'move: drops the columns after copying them (for a single column)' do

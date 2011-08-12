@@ -17,24 +17,34 @@ config = begin
   configs = YAML.load_file(File.expand_path('../database.yml', __FILE__)).symbolize_keys
   configs[adapter.to_sym].symbolize_keys
 rescue Errno::ENOENT => e
-  { :adapter => 'postgresql', :database => 'data_migrations_test' }
+  { :adapter => 'postgresql', :database => 'data_migrations_test', :min_messages => 'warning' }
 end
 
 puts "Running tests against #{adapter}"
 ActiveRecord::Base.establish_connection(config)
 ActiveRecord::Migration.verbose = false
 
-ActiveRecord::Schema.define(:version => 1) do
-  drop_table :builds rescue nil
-  create_table :builds, :force => true do |t|
-    t.integer :parent_id
-    t.integer :status
-    t.string :commit
-  end
-end unless ActiveRecord::Base.connection.table_exists?(:builds)
 
 
 module TestHelpers
+  def setup
+    super
+    rebuild_tables
+  end
+
+  def rebuild_tables
+    ActiveRecord::Schema.define(:version => 1) do
+      drop_table :builds rescue nil
+      drop_table :tasks rescue nil
+
+      create_table :builds, :force => true do |t|
+        t.integer :parent_id
+        t.integer :status
+        t.string :commit
+      end
+    end
+  end
+
   def migrate_table_statements(&block)
     migrate_table(&block).instructions.last.statements
   end
@@ -45,3 +55,6 @@ module TestHelpers
 end
 
 Test::Unit::TestCase.send(:include, TestHelpers)
+
+class Build < ActiveRecord::Base; end
+class Task < ActiveRecord::Base; end

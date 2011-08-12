@@ -18,9 +18,15 @@ module DataMigrations
       protected
 
         def insert_statement
-          statement = "INSERT INTO #{target.quoted_name} SELECT #{aliased_column_names} FROM #{source.quoted_name} "
-          statement << "WHERE #{condition} " if condition
-          statement << "AS t(#{column_definitions})"
+          statement = "INSERT INTO #{target.quoted_name} (#{alias_names})"
+          statement << " SELECT #{aliased_column_names} FROM #{source.quoted_name}"
+          statement << " WHERE #{condition}" if condition
+          # statement << "AS t(#{column_definitions})"
+          statement
+        end
+
+        def alias_names
+          columns.map(&:quoted_alias_name).join(', ')
         end
 
         def aliased_column_names
