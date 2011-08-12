@@ -1,3 +1,5 @@
 rvm:
   - 1.9.2
   - 1.9.3
+before_script:
+  - "psql -c 'create database data_migrations_test;' -U postgres >/dev/null"
