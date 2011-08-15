@@ -19,12 +19,17 @@ module DataMigrations
     end
     alias :where :condition
 
-    def move(*args)
-      instructions << Instruction::Move.new(self, *args)
-    end
-
     def copy(*args)
       instructions << Instruction::Copy.new(self, *args)
+    end
+
+    def move(*args)
+      copy(*args)
+      instructions << Instruction::Remove.new(self, *args)
+    end
+
+    def set(*args)
+      instructions << Instruction::Set.new(self, *args)
     end
 
     def exec(*args)

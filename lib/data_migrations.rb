@@ -8,13 +8,10 @@ module DataMigrations
   autoload :Migration,   'data_migrations/migration'
   autoload :Table,       'data_migrations/table'
 
-  extend ActiveSupport::Concern
-
-  module ClassMethods
-    def migrate_table(name, options, &block)
-      Migration.new(name, options, &block).run!
-    end
+  def migrate_table(name, options, &block)
+    Migration.new(name, options, &block).run!
   end
+  alias :migrate_data :migrate_table
 
-  ActiveRecord::Migration.send(:include, self)
+  ActiveRecord::Migration.send(:extend, self)
 end

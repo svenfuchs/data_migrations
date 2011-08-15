@@ -15,6 +15,7 @@
 
           # t.copy :all, :except => :foo
           # t.exec 'UPDATE foo ...'
+          # t.set :source, 'github'
         end
       end
 
@@ -30,3 +31,4 @@
         drop_table :tests
       end
     end
+

@@ -2,14 +2,10 @@ module DataMigrations
   class Column
     attr_reader :table, :name, :alias
 
-    def initialize(table, name, alias_)
+    def initialize(table, name, alias_ = nil)
       @table = table
       @name  = name
       @alias = alias_
-    end
-
-    def aliased
-      self.alias ? "#{quote(name)} AS #{quote(self.alias)}" : quote(name)
     end
 
     def definition
@@ -21,7 +17,11 @@ module DataMigrations
     end
 
     def column
-      @column ||= table.column(name)
+      table.column(name)
+    end
+
+    def aliased_name
+      self.alias.present? ? "#{quote(name)} AS #{quote(self.alias)}" : quote(name)
     end
 
     def quoted_name
@@ -29,11 +29,19 @@ module DataMigrations
     end
 
     def quoted_alias_name
-      quote(self.alias || name)
+      quote(self.alias.present? ? self.alias : name)
+    end
+
+    def quote_value(value)
+      table.connection.quote(value, column)
     end
 
     def quote(name)
-      ActiveRecord::Base.connection.quote_column_name(name)
+      table.connection.quote_column_name(name)
+    end
+
+    def ==(other)
+      name == other.name
     end
   end
 end

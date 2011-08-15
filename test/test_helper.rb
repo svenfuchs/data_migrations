@@ -42,6 +42,12 @@ module TestHelpers
         t.integer :status
         t.string :commit
       end
+
+      create_table :tasks, :force => true do |t|
+        t.integer :owner_id
+        t.integer :result
+        t.string :hash
+      end
     end
   end
 

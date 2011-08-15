@@ -8,11 +8,11 @@ class MigrateTableTest < Test::Unit::TestCase
   test 'migrate_table instantiates a migration and executes it' do
     ActiveRecord::Base.connection.stubs(:execute)
 
-    output = migration do
-      migrate_table(:builds, :to => :tasks) { |t| t.copy :status }
-    end
+    actual = migration { migrate_table(:builds, :to => :tasks) { |t| t.copy :status } }
+    expected = 'Executing: UPDATE "tasks" SET "id" = source."id", "status" = source."status" FROM (SELECT "id", "status" FROM "builds" WHERE "builds".id IN (SELECT id FROM "tasks")) AS source WHERE "tasks".id = source.id' + "\n" +
+      'Executing: INSERT INTO "tasks" ("id", "status") SELECT "id", "status" FROM "builds" WHERE "builds".id NOT IN (SELECT id FROM "tasks")'
 
-    assert_equal 'Executing: INSERT INTO "tasks" ("status") SELECT "status" FROM "builds"', output.strip
+    assert_equal expected, actual.strip
   end
 
   test 'copys a column' do
