@@ -25,6 +25,10 @@ module DataMigrations
 
     def move(*args)
       copy(*args)
+      remove(*args)
+    end
+
+    def remove(*args)
       instructions << Instruction::Remove.new(self, *args)
     end
 
